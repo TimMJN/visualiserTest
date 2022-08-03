@@ -48,44 +48,64 @@ void setup() {
 
 void loop() {
 
+int randC = random(0, 65000);
 
   pot = map(analogRead(A0), 0, 1023, 0, 100);
 
 
-    if (x0 != x0Prev || y0 != y0Prev || x1 != x1Prev || y1 != y1Prev) {
-      tft.drawLine(x0Prev, y0Prev, x1Prev, y1Prev, 0);
-      tft.drawCircle(x0Prev, y0Prev,  y1Prev, 0);
-      //  tft.fillScreen(ST77XX_BLACK);
-      x0Prev = x0;
-      y0Prev = y0;
-      x1Prev = x1;
-      y1Prev = y1;
-    }
+  if (x0 != x0Prev || y0 != y0Prev || x1 != x1Prev || y1 != y1Prev) {
+    tft.drawLine(x0Prev, y0Prev, x1Prev, y1Prev, 0);
+    tft.drawCircle(x0Prev, y0Prev,  y1Prev, 0);
+    //  tft.fillScreen(ST77XX_BLACK);
+    x0Prev = x0;
+    y0Prev = y0;
+    x1Prev = x1;
+    y1Prev = y1;
+  }
 
 
   //SYNTHWAVE 3D GRAPH
 
-  //          for (int i = 0; i < 319; i++) {
+
+//FOR LOOP
+  for (int i = 0; i < 319; i++) {
+
+    x0 = tan(i) * 80 + 110;
+    y0 = cos(i) * 80 + 110;
+    x1 = sin(i) * 80 + 110;
+    y1 = sin(i) * pot + 110;
+    colour = randC;
+
+    tft.drawLine(x0, y0, x1, y1, colour);
+  }
+
+//MY DODGY ATTEMPT AT THE SAME THING WITHOUT A FOR
+//  if (i < 320) {
+//    i++;
+//    x0 = tan(i) * 80 + 110;
+//    y0 = cos(i) * 80 + 110;
+//    x1 = sin(i) * 80 + 110;
+//    y1 = sin(i) * pot + 110;
+//    colour = randX * 150;
+//
+//    tft.drawLine(x0, y0, x1, y1, colour);
+//  }
+//
+//
+//  else {
+//    i = 0;
+//  }
+
+
+  //SIMPLE CIRCLE
+
+  //  x0 = 160;
+  //  y0 = 120;
+  //  y1 = pot;
+  //  colour = 65000;
   //
-  //            x0 = tan(i) * 80 + 110;
-  //            y0 = cos(i) * 80 + 110;
-  //            x1 = sin(i) * 80 + 110;
-  //            y1 = sin(i) * pot + 110;
-  //            colour = randX * 150;
   //
-  //            tft.drawLine(x0, y0, x1, y1, colour);
-  //          }
-
-
-//SIMPLE CIRCLE
-
-  x0 = 160;
-  y0 = 120;
-  y1 = pot;
-  colour = 65000;
-
-
-  tft.drawCircle(x0, y0, y1, colour);
+  //  tft.drawCircle(x0, y0, y1, colour);
 
 
 }
