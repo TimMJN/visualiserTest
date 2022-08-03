@@ -14,22 +14,22 @@ Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 
 #define MAX_WIDTH 320
 #define MAX_LENGTH 240
+#define BUFFER_LENGTH 20
+#define UPDATE_INTERVAL 300 //ms
 
 int pot = 0;
 
-int i = 0;
-
-int x0 = 0;
-int y0 = 0;
-int x1 = 0;
-int y1 = 0;
+int x0[BUFFER_LENGTH];
+int y0[BUFFER_LENGTH];
+int x1[BUFFER_LENGTH];
+int y1[BUFFER_LENGTH];
 int colour = 0;
+int buffer_position = 0;
 
-int x0Prev = x0;
-int y0Prev = y0;
-int x1Prev = x1;
-int y1Prev = y1;
+unsigned long last_update;
 
+int alpha = 0;
+int alpha_max=320;
 
 void setup() {
 
@@ -43,41 +43,47 @@ void setup() {
 
   Serial.begin(9600);
 
-
+  last_update=millis();
+  
+  for (int i = 0; i < BUFFER_LENGTH; i++) {
+    x0[i]=0;
+    y0[i]=0;
+    x1[i]=0;
+    y1[i]=0;
+  }
 }
 
 void loop() {
 
-int randC = random(0, 65000);
-
-  pot = map(analogRead(A0), 0, 1023, 0, 100);
-
-
-  if (x0 != x0Prev || y0 != y0Prev || x1 != x1Prev || y1 != y1Prev) {
-    tft.drawLine(x0Prev, y0Prev, x1Prev, y1Prev, 0);
-    tft.drawCircle(x0Prev, y0Prev,  y1Prev, 0);
-    //  tft.fillScreen(ST77XX_BLACK);
-    x0Prev = x0;
-    y0Prev = y0;
-    x1Prev = x1;
-    y1Prev = y1;
-  }
-
-
-  //SYNTHWAVE 3D GRAPH
-
-
-//FOR LOOP
-  for (int i = 0; i < 319; i++) {
-
-    x0 = tan(i) * 80 + 110;
-    y0 = cos(i) * 80 + 110;
-    x1 = sin(i) * 80 + 110;
-    y1 = sin(i) * pot + 110;
+  if (millis()-last_update>=UPDATE_INTERVAL) {
+    
+    // pick color and read pot
+    int randC = random(0, 65000);
+    pot = map(analogRead(A0), 0, 1023, 0, 100);
+    
+    // determine new line
+    x0[buffer_position] = tan(alpha) * 80 + 110;
+    y0[buffer_position] = cos(alpha) * 80 + 110;
+    x1[buffer_position] = sin(alpha) * 80 + 110;
+    y1[buffer_position] = sin(alpha) * pot + 110;
     colour = randC;
+    alpha++;
+    alpha%=alpha_max;
 
-    tft.drawLine(x0, y0, x1, y1, colour);
+    // draw new line
+    tft.drawLine(x0[buffer_position], y0[buffer_position], x1[buffer_position], y1[buffer_position], colour);
+    
+    // increase buffer position
+    buffer_position++;
+    buffer_position%=BUFFER_LENGTH;
+    
+    // clear the oldest line
+    tft.drawLine(x0[buffer_position], y0[buffer_position], x1[buffer_position], y1[buffer_position], 0);
+    
+    // reset timer
+    last_update = millis();
   }
+
 
 //MY DODGY ATTEMPT AT THE SAME THING WITHOUT A FOR
 //  if (i < 320) {
