@@ -17,9 +17,6 @@ Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 
 int pot = 0;
 
-int potMovement = 0;
-int lastPotMovement = 0;
-
 int i = 0;
 
 int x0 = 0;
@@ -82,16 +79,13 @@ void loop() {
 
 //SIMPLE CIRCLE
 
-  x0 = pot;
+  x0 = 160;
   y0 = 120;
   y1 = pot;
   colour = 65000;
 
 
   tft.drawCircle(x0, y0, y1, colour);
-
-
-
 
 
 }
